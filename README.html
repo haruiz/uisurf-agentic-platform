@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.550">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>readme</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="README_files/libs/clipboard/clipboard.min.js"></script>
+<script src="README_files/libs/quarto-html/quarto.js"></script>
+<script src="README_files/libs/quarto-html/popper.min.js"></script>
+<script src="README_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="README_files/libs/quarto-html/anchor.min.js"></script>
+<link href="README_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="README_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="README_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="README_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="README_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body class="fullcontent">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+
+
+
+<section id="uisurf-agentic-platform" class="level1">
+<h1>UISurf Agentic Platform</h1>
+<p><strong>UISurf Agentic Platform</strong> is a multi-repository platform for building and operating <strong>Universal UI Agents</strong> capable of controlling both <strong>web browsers and desktop environments</strong> to automate complex tasks.</p>
+<p>The platform enables users to describe tasks in <strong>natural language</strong> that require navigating web interfaces or interacting with a computer. UISurf then manages the <strong>end-to-end execution</strong> of the workflow by reasoning about the request, interacting with user interfaces, gathering relevant information, and performing the required actions automatically.</p>
+<p>UISurf leverages the <strong>multimodal capabilities of Gemini</strong> to reason over UI screenshots and the current visual state of the browser or desktop. This allows agents to interpret the environment and determine the next best action during an automation workflow.</p>
+<p>This project was created to participate in the <strong><a href="https://geminiliveagentchallenge.devpost.com/">Gemini Live Agent Challenge</a></strong>, a Devpost hackathon focused on building next-generation multimodal and agentic experiences.</p>
+<hr>
+<section id="example-task" class="level2">
+<h2 class="anchored" data-anchor-id="example-task">Example Task</h2>
+<blockquote class="blockquote">
+<p>Go to Best Buy, Walmart, and Amazon, find which store has the best price for the latest MacBook Pro, and create a text file on the desktop with the results of the comparison.</p>
+</blockquote>
+<p>In this workflow, UISurf launches an <strong>isolated automation session</strong>, navigates multiple retailer websites, compares product prices, and then switches from browser interaction to desktop interaction to save the results locally.</p>
+<p>This example demonstrates how UISurf agents can <strong>combine browser automation with desktop interaction</strong> to complete multi-step workflows autonomously.</p>
+<hr>
+</section>
+<section id="project-overview" class="level2">
+<h2 class="anchored" data-anchor-id="project-overview">Project Overview</h2>
+<p>UISurf is an Agentic UI Automation Platform with three main responsibilities:</p>
+<ul>
+<li>run Universal UI Agents that can use browsers and desktops as tools</li>
+<li>orchestrate isolated remote automation sessions for those agents</li>
+<li>provide an authenticated operator workspace where users can launch and monitor tasks</li>
+</ul>
+<p>The platform is organized as three primary repositories and services:</p>
+<ul>
+<li><code>uisurf-agent</code></li>
+<li><code>uisurf-admin</code></li>
+<li><code>uisurf-app</code></li>
+</ul>
+<p>Together, these components form the execution layer, control plane, and user-facing application for UI automation.</p>
+</section>
+<section id="local-project-structure" class="level2">
+<h2 class="anchored" data-anchor-id="local-project-structure">Local Project Structure</h2>
+<pre class="text"><code>uisurf-agentic-platform/
+  README.md
+  uisurf-agent/
+    src/
+    docker/
+    scripts/
+    README.md
+    pyproject.toml
+  uisurf-admin/
+    src/
+    scripts/
+    README.md
+    pyproject.toml
+  uisurf-app/
+    src/
+    ui/
+    scripts/
+    README.md
+    pyproject.toml</code></pre>
+</section>
+<section id="platform-architecture" class="level2">
+<h2 class="anchored" data-anchor-id="platform-architecture">Platform Architecture</h2>
+<p>UISurf is structured around three layers:</p>
+<ol type="1">
+<li>Agent runtime layer</li>
+<li>Session orchestration layer</li>
+<li>User application layer</li>
+</ol>
+<p>At runtime, the platform works like this:</p>
+<ol type="1">
+<li>A user signs in to the UISurf application and submits a task.</li>
+<li>The application determines whether a managed UI automation session is required.</li>
+<li>The admin service provisions or restores an isolated agent session.</li>
+<li>The agent runtime executes browser or desktop actions inside that environment.</li>
+<li>The application streams session state back to the user so the task can be observed and guided.</li>
+</ol>
+</section>
+<section id="google-cloud-architecture" class="level2">
+<h2 class="anchored" data-anchor-id="google-cloud-architecture">Google Cloud Architecture</h2>
+<p>Below is an overview of the current architecture and the Google Cloud Platform services used in UISurf.</p>
+<section id="uisurf-app" class="level3">
+<h3 class="anchored" data-anchor-id="uisurf-app"><code>uisurf-app</code></h3>
+<p><code>uisurf-app</code> is deployed on Google Cloud Run and serves as the main entry point for users interacting with the platform.</p>
+<p>The application uses:</p>
+<ul>
+<li>Firebase Authentication for user authentication and platform access management</li>
+<li>Firestore to store and manage session metadata and chat session information</li>
+</ul>
+<p>The application consists of:</p>
+<ul>
+<li>a Next.js frontend that provides the user interface</li>
+<li>a FastAPI backend that handles API requests and coordinates agent interactions</li>
+</ul>
+<p>For the multi-agent system, the platform uses Google ADK (Agent Development Kit). ADK agents connect to automation agents running inside session-level containers via the Agent2Agent (A2A) protocol.</p>
+<p>Additionally, Vertex AI is used for agent session management and orchestration.</p>
+</section>
+<section id="uisurf-admin" class="level3">
+<h3 class="anchored" data-anchor-id="uisurf-admin"><code>uisurf-admin</code></h3>
+<p><code>uisurf-admin</code> is a FastAPI service responsible for managing the lifecycle of UI automation agent sessions.</p>
+<p>This service runs on a Google Compute Engine virtual machine and interfaces with a local Docker daemon through the Docker Python API.</p>
+<p>Its responsibilities include:</p>
+<ul>
+<li>spinning up sandboxed <code>uisurf-agent</code> containers on demand</li>
+<li>managing container lifecycle for each session</li>
+<li>listing active sessions</li>
+<li>restoring sessions after service restarts</li>
+<li>deleting sessions when they are no longer needed</li>
+</ul>
+<p>Each automation session runs in its own isolated Docker container, which provides safe and independent execution.</p>
+</section>
+<section id="uisurf-agent" class="level3">
+<h3 class="anchored" data-anchor-id="uisurf-agent"><code>uisurf-agent</code></h3>
+<p><code>uisurf-agent</code> runs inside a sandboxed Docker container and provides the runtime environment for UI automation agents.</p>
+<p>Each container exposes two A2A-compatible agents:</p>
+<ul>
+<li>Browser Agent, which controls web browsers via Playwright</li>
+<li>Desktop Agent, which controls the operating system desktop</li>
+</ul>
+<p>These agents allow higher-level orchestration agents to execute UI automation tasks in a secure and isolated environment.</p>
+</section>
+</section>
+<section id="core-components" class="level2">
+<h2 class="anchored" data-anchor-id="core-components">Core Components</h2>
+<section id="uisurf-agent-1" class="level3">
+<h3 class="anchored" data-anchor-id="uisurf-agent-1"><code>uisurf-agent</code></h3>
+<p><code>uisurf-agent</code> is a Python package that provides the core runtime for UI automation agents.</p>
+<p>These agents can operate in two environments:</p>
+<ul>
+<li>Web Browser Automation using Playwright</li>
+<li>Desktop Automation using desktop control utilities that interact with operating system interfaces</li>
+</ul>
+<p>The package implements Universal UI Agents using an agentic reasoning loop. In practice, that means an agent can:</p>
+<ul>
+<li>observe the current UI state</li>
+<li>decide what action should happen next</li>
+<li>execute interactions against a browser or desktop</li>
+<li>continue iterating until the task is complete</li>
+</ul>
+<p>This makes the agent suitable for tasks that require multiple steps, adaptation to changing UI state, and coordination across different interfaces.</p>
+<section id="capabilities" class="level4">
+<h4 class="anchored" data-anchor-id="capabilities">Capabilities</h4>
+<p><code>uisurf-agent</code> includes support for:</p>
+<ul>
+<li>browser automation agents</li>
+<li>desktop automation agents</li>
+<li>local CLI-based execution for manual testing and development</li>
+<li>A2A-compatible agent exposure for browser and desktop agents</li>
+</ul>
+<p>The A2A support allows external agents or orchestration systems to invoke UISurf agents as tools in a distributed agent ecosystem.</p>
+</section>
+<section id="sandboxed-container-runtime" class="level4">
+<h4 class="anchored" data-anchor-id="sandboxed-container-runtime">Sandboxed Container Runtime</h4>
+<p>The package can also be wrapped and deployed as a Docker container that provides a sandboxed computer-use environment.</p>
+<p>That container can include:</p>
+<ul>
+<li>a UI operator service responsible for executing UI automation commands</li>
+<li>a sandboxed computer-use agent capable of controlling browser and desktop interfaces</li>
+<li>optional VNC or noVNC access for observing the session remotely</li>
+</ul>
+<p>This model enables secure and isolated execution of automation tasks without requiring direct access to the host environment.</p>
+</section>
+<section id="role-in-the-platform" class="level4">
+<h4 class="anchored" data-anchor-id="role-in-the-platform">Role In The Platform</h4>
+<p><code>uisurf-agent</code> is the execution engine of UISurf. It is responsible for doing the actual UI work once a session is provisioned.</p>
+</section>
+</section>
+<section id="uisurf-admin-1" class="level3">
+<h3 class="anchored" data-anchor-id="uisurf-admin-1"><code>uisurf-admin</code></h3>
+<p><code>uisurf-admin</code> is the backend session management service responsible for orchestrating UISurf agent sessions.</p>
+<p>It acts as the control plane of the platform.</p>
+<section id="responsibilities" class="level4">
+<h4 class="anchored" data-anchor-id="responsibilities">Responsibilities</h4>
+<p>The service is responsible for:</p>
+<ul>
+<li>creating UISurf agent session containers on demand</li>
+<li>spinning up and managing Docker-based VNC sandbox environments</li>
+<li>listing active sessions managed by the platform</li>
+<li>restoring managed sessions from Docker when the API restarts</li>
+<li>deleting sessions when they are no longer needed</li>
+</ul>
+<p>It also exposes authenticated administrative endpoints for:</p>
+<ul>
+<li>user management</li>
+<li>session lifecycle management</li>
+</ul>
+</section>
+<section id="why-it-exists" class="level4">
+<h4 class="anchored" data-anchor-id="why-it-exists">Why It Exists</h4>
+<p>UISurf needs a reliable service that can treat UI automation environments as managed infrastructure instead of ad hoc local processes.</p>
+<p><code>uisurf-admin</code> provides that orchestration layer by:</p>
+<ul>
+<li>tracking managed session containers</li>
+<li>reconstructing session state from Docker after restarts</li>
+<li>making session management available through authenticated APIs</li>
+</ul>
+<p>This lets the rest of the platform request automation environments on demand and interact with them consistently.</p>
+</section>
+</section>
+<section id="uisurf-app-1" class="level3">
+<h3 class="anchored" data-anchor-id="uisurf-app-1"><code>uisurf-app</code></h3>
+<p><code>uisurf-app</code> is the main user-facing application.</p>
+<p>It is a full-stack operator workspace that allows authenticated users to interact with automation sessions through a chat-based interface.</p>
+<p>The application combines:</p>
+<ul>
+<li>a FastAPI backend</li>
+<li>a Next.js frontend</li>
+<li>Firebase Authentication for end-to-end authentication</li>
+</ul>
+<section id="user-facing-capabilities" class="level4">
+<h4 class="anchored" data-anchor-id="user-facing-capabilities">User-Facing Capabilities</h4>
+<p>Through the UISurf application, users can:</p>
+<ul>
+<li>create and manage UI automation sessions</li>
+<li>interact with agents using natural language</li>
+<li>refine prompts before or during execution</li>
+<li>observe running automation tasks</li>
+<li>control remote UI sessions</li>
+</ul>
+<p>This is the layer where users describe desired outcomes and where operators observe execution, inspect results, and manage ongoing work.</p>
+</section>
+<section id="role-in-the-platform-1" class="level4">
+<h4 class="anchored" data-anchor-id="role-in-the-platform-1">Role In The Platform</h4>
+<p><code>uisurf-app</code> is the main operator experience. It connects end users to the underlying session and agent infrastructure and presents those capabilities through a secure web interface.</p>
+</section>
+</section>
+</section>
+<section id="how-the-components-interact" class="level2">
+<h2 class="anchored" data-anchor-id="how-the-components-interact">How The Components Interact</h2>
+<p>The three services are designed to work together as a coordinated system.</p>
+<section id="interaction-flow" class="level3">
+<h3 class="anchored" data-anchor-id="interaction-flow">Interaction Flow</h3>
+<ol type="1">
+<li>A user authenticates in <code>uisurf-app</code>.</li>
+<li>The user starts a chat or submits a natural-language automation request.</li>
+<li><code>uisurf-app</code> requests a managed session when remote execution is needed.</li>
+<li><code>uisurf-admin</code> creates or restores a Docker-backed UISurf agent session.</li>
+<li>The provisioned environment runs <code>uisurf-agent</code>.</li>
+<li><code>uisurf-agent</code> controls the browser, desktop, or both to execute the task.</li>
+<li>Session state, remote access details, and automation progress are exposed back through <code>uisurf-app</code>.</li>
+</ol>
+</section>
+<section id="conceptual-architecture" class="level3">
+<h3 class="anchored" data-anchor-id="conceptual-architecture">Conceptual Architecture</h3>
+<pre class="text"><code>User
+  |
+  v
+uisurf-app
+  |  Cloud Run, Firebase Auth, Firestore, ADK coordination
+  v
+uisurf-admin
+  |  GCE VM, Docker session orchestration and lifecycle management
+  v
+uisurf-agent
+  |  browser automation / desktop automation / A2A agent runtime
+  v
+Sandboxed browser and desktop environment</code></pre>
+</section>
+</section>
+<section id="session-workflow" class="level2">
+<h2 class="anchored" data-anchor-id="session-workflow">Session Workflow</h2>
+<p>The session lifecycle currently works as follows:</p>
+<ol type="1">
+<li>A user starts a new chat session from the UISurf application.</li>
+<li>The system creates a Vertex AI ADK session for the conversation.</li>
+<li>The backend sends a request to <code>uisurf-admin</code> to create a new automation session.</li>
+<li><code>uisurf-admin</code> spins up a Docker container running <code>uisurf-agent</code>.</li>
+<li>The container exposes the Browser Agent and Desktop Agent through the A2A protocol.</li>
+<li>The ADK orchestration agents connect to those agents and begin executing automation tasks.</li>
+<li>When the user deletes the session, the admin API stops and removes the associated container.</li>
+</ol>
+</section>
+<section id="example-end-to-end-scenario" class="level2">
+<h2 class="anchored" data-anchor-id="example-end-to-end-scenario">Example End-To-End Scenario</h2>
+<p>For the MacBook Pro price-comparison task, the platform can operate like this:</p>
+<ol type="1">
+<li>The user submits the task from the UISurf web application.</li>
+<li>A remote session is created for the task.</li>
+<li>The browser agent opens Best Buy, Walmart, and Sam’s Club.</li>
+<li>The agent navigates product pages, extracts pricing information, and compares the available offers.</li>
+<li>The task may then switch to desktop control so the agent can create a text file and write the results.</li>
+<li>The user can observe the session through the application and review the final output.</li>
+</ol>
+<p>This demonstrates the core idea of UISurf: a single agent workflow can span multiple UIs and multiple execution modalities while remaining accessible through one platform.</p>
+</section>
+<section id="technology-stack" class="level2">
+<h2 class="anchored" data-anchor-id="technology-stack">Technology Stack</h2>
+<p>The current repository structure shows a platform built primarily on:</p>
+<ul>
+<li>Python 3.11+</li>
+<li>FastAPI</li>
+<li>Docker</li>
+<li>Google Cloud Run</li>
+<li>Google Compute Engine</li>
+<li>Firestore</li>
+<li>Firebase Authentication</li>
+<li>Vertex AI</li>
+<li>Google ADK</li>
+<li>Playwright</li>
+<li>desktop control libraries</li>
+<li>Next.js</li>
+<li>React</li>
+</ul>
+<p>Additional package-level details are documented in the component READMEs.</p>
+</section>
+<section id="future-improvements" class="level2">
+<h2 class="anchored" data-anchor-id="future-improvements">Future Improvements</h2>
+<p>For future scalability and performance improvements, the platform is planned to migrate from Docker-based container management on a virtual machine to a Kubernetes-based orchestration system.</p>
+<p>Using Kubernetes would allow:</p>
+<ul>
+<li>improved session scalability</li>
+<li>better resource management</li>
+<li>faster container orchestration</li>
+<li>more reliable session lifecycle handling</li>
+</ul>
+<p>In that architecture, each UI automation session would run as a Kubernetes-managed sandboxed agent container, replacing the current Docker-based approach.</p>
+</section>
+<section id="component-documentation" class="level2">
+<h2 class="anchored" data-anchor-id="component-documentation">Component Documentation</h2>
+<p>Each component in the platform has its own README with implementation and local-development details:</p>
+<ul>
+<li><a href="/Users/haruiz/open-source/uisurf-agentic-platform/uisurf-agent/README.md">uisurf-agent/README.md</a></li>
+<li><a href="/Users/haruiz/open-source/uisurf-agentic-platform/uisurf-admin/README.md">uisurf-admin/README.md</a></li>
+<li><a href="/Users/haruiz/open-source/uisurf-agentic-platform/uisurf-app/README.md">uisurf-app/README.md</a></li>
+</ul>
+</section>
+<section id="summary" class="level2">
+<h2 class="anchored" data-anchor-id="summary">Summary</h2>
+<p>UISurf Agentic Platform provides the full stack required to run Universal UI Agents safely and usefully in production-like environments:</p>
+<ul>
+<li><code>uisurf-agent</code> runs the automation logic</li>
+<li><code>uisurf-admin</code> manages isolated session infrastructure</li>
+<li><code>uisurf-app</code> gives users a secure interface to launch, observe, and control agentic UI automation</li>
+</ul>
+<p>The result is a platform where natural-language tasks can be translated into real browser and desktop actions executed inside managed sandbox environments.</p>
+</section>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

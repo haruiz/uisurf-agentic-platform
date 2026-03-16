@@ -1,0 +1,9 @@
+[submodule "uisurf-admin"]
+	path = uisurf-admin
+	url = ./uisurf-admin/
+[submodule "uisurf-agent"]
+	path = uisurf-agent
+	url = ./uisurf-agent/
+[submodule "uisurf-app"]
+	path = uisurf-app
+	url = ./uisurf-app/
