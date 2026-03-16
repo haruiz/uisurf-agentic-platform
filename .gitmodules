@@ -1,9 +1,11 @@
 [submodule "uisurf-admin"]
 	path = uisurf-admin
-	url = ./uisurf-admin/
+	url = https://github.com/haruiz/uisurf-admin.git
+
 [submodule "uisurf-agent"]
 	path = uisurf-agent
-	url = ./uisurf-agent/
+	url = https://github.com/haruiz/uisurf-agent.git
+
 [submodule "uisurf-app"]
 	path = uisurf-app
-	url = ./uisurf-app/
+	url = https://github.com/haruiz/uisurf-app.git
