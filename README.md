@@ -328,6 +328,137 @@ Using Kubernetes would allow:
 
 In that architecture, each UI automation session would run as a Kubernetes-managed sandboxed agent container, replacing the current Docker-based approach.
 
+## Run Locally
+
+To run UISurf on a local machine, start the platform in this order:
+
+1. Build the `uisurf-agent` Docker image
+2. Start the `uisurf-admin` session service
+3. Start the `uisurf-app` backend and frontend
+
+### Prerequisites
+
+- Python 3.11+
+- `uv`
+- Docker
+- Node.js 20+
+- Yarn 1.x
+- Firebase Authentication configuration
+- Firestore configuration
+- Google API credentials required by the app and agent services
+
+Firebase and Firestore must be configured for local development because `uisurf-app` depends on them for core platform behavior:
+
+- Firebase Authentication is required so users can sign in and access protected application flows
+- Firestore is required to persist and manage chat session data and session metadata used by the platform
+
+Without Firebase Authentication, the frontend and backend cannot complete the expected authenticated user flow.
+Without Firestore, the application cannot reliably store and retrieve the session and chat state it uses during operation.
+
+Before starting, configure the environment files described in the component READMEs:
+
+- `uisurf-agent/.env`
+- `uisurf-admin` environment variables
+- `uisurf-app/.env`
+- `uisurf-app/ui/.env.local`
+
+At minimum, make sure:
+
+- the `uisurf-agent` image is built as `uisurf-agent:latest`
+- `uisurf-admin` can access Docker locally
+- `PUBLIC_VNC_HOST` is set for `uisurf-admin`
+- `UI_AGENT_API_BASE_URL` in `uisurf-app/.env` points to the local admin service
+- `NEXT_PUBLIC_API_BASE_URL` in `uisurf-app/ui/.env.local` points to the local app backend
+
+Recommended local values:
+
+- `PUBLIC_VNC_HOST=127.0.0.1`
+- `UI_AGENT_API_BASE_URL=http://127.0.0.1:8082/api`
+- `NEXT_PUBLIC_API_BASE_URL=http://localhost:8000/api/v1`
+
+### 1. Build The `uisurf-agent` Docker Image
+
+From [uisurf-agent](/Users/haruiz/open-source/uisurf-agentic-platform/uisurf-agent):
+
+```bash
+cd uisurf-agent
+sh ./build-image.sh
+```
+
+This builds the agent runtime image expected by `uisurf-admin`:
+
+- image name: `uisurf-agent:latest`
+
+### 2. Start `uisurf-admin`
+
+From [uisurf-admin](/Users/haruiz/open-source/uisurf-agentic-platform/uisurf-admin):
+
+```bash
+cd uisurf-admin
+uv sync
+PUBLIC_VNC_HOST=127.0.0.1 sh ./run.local.sh
+```
+
+By default, [run.local.sh](/Users/haruiz/open-source/uisurf-agentic-platform/uisurf-admin/run.local.sh) starts the admin service on port `8082`.
+
+This service is responsible for creating and managing the sandboxed `uisurf-agent` session containers.
+
+### 3. Start `uisurf-app`
+
+From [uisurf-app](/Users/haruiz/open-source/uisurf-agentic-platform/uisurf-app):
+
+```bash
+cd uisurf-app
+uv sync
+cd ui
+yarn install
+cd ..
+./run-dev.sh
+```
+
+This starts:
+
+- the FastAPI backend on port `8000`
+- the Next.js frontend on port `3000`
+
+The helper script [run-dev.sh](/Users/haruiz/open-source/uisurf-agentic-platform/uisurf-app/run-dev.sh) launches both services together.
+
+### Local Startup Summary
+
+Open three terminals and run:
+
+Terminal 1:
+
+```bash
+cd uisurf-agent
+sh ./build-image.sh
+```
+
+Terminal 2:
+
+```bash
+cd uisurf-admin
+uv sync
+PUBLIC_VNC_HOST=127.0.0.1 sh ./run.local.sh
+```
+
+Terminal 3:
+
+```bash
+cd uisurf-app
+uv sync
+cd ui
+yarn install
+cd ..
+./run-dev.sh
+```
+
+Once everything is running:
+
+- UISurf frontend: `http://localhost:3000`
+- UISurf app backend: `http://localhost:8000`
+- UISurf admin service: `http://localhost:8082`
+
 ## Component Documentation
 
 Each component in the platform has its own README with implementation and local-development details:
