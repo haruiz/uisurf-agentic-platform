@@ -423,6 +423,42 @@ This starts:
 
 The helper script [run-dev.sh](/Users/haruiz/open-source/uisurf-agentic-platform/uisurf-app/run-dev.sh) launches both services together.
 
+### 4. Create a Test User
+
+After the app is configured, create a Firebase email/password test user from [uisurf-app](/Users/haruiz/open-source/uisurf-agentic-platform/uisurf-app):
+
+```bash
+cd uisurf-app
+uv run python scripts/create_test_user.py \
+  --email test@example.com \
+  --password "ChangeMe123!" \
+  --display-name "UISurf Test User"
+```
+
+To update the same user if it already exists:
+
+```bash
+cd uisurf-app
+uv run python scripts/create_test_user.py \
+  --email test@example.com \
+  --password "ChangeMe123!" \
+  --display-name "UISurf Test User" \
+  --update-if-exists
+```
+
+To create an admin test user:
+
+```bash
+cd uisurf-app
+uv run python scripts/create_test_user.py \
+  --email admin@example.com \
+  --password "ChangeMe123!" \
+  --display-name "UISurf Admin" \
+  --admin
+```
+
+This script uses the same Firebase Admin credentials configured for the app backend.
+
 ### Local Startup Summary
 
 Open three terminals and run:
