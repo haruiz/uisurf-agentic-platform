@@ -80,6 +80,8 @@ At runtime, the platform works like this:
 
 Below is an overview of the current architecture and the Google Cloud Platform services used in UISurf.
 
+![UISurf architecture diagram](/assets/architecture-diagram.png)
+
 ### `uisurf-app`
 
 `uisurf-app` is deployed on Google Cloud Run and serves as the main entry point for users interacting with the platform.
@@ -217,6 +219,8 @@ The application combines:
 - a FastAPI backend
 - a Next.js frontend
 - Firebase Authentication for end-to-end authentication
+
+![UISurf application UI](assets/screenshot.png)
 
 #### User-Facing Capabilities
 
